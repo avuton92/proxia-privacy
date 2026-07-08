@@ -1,0 +1,122 @@
+{
+  "version": 11,
+  "rules": [
+    {
+      "id": "exfiltration.markdown_image",
+      "category": "Exfiltration",
+      "severity": "medium",
+      "pattern": "(?i)!\\[[^\\]]*\\]\\(\\s*https?://[^)\\s]+\\?[^)\\s]*=[A-Za-z0-9%+/_-]{20,}",
+      "confidence": 0.6,
+      "message": "Image markdown vers une URL à données encodées (exfiltration possible)"
+    },
+    {
+      "id": "injection.instruction_override",
+      "category": "Injection",
+      "severity": "medium",
+      "pattern": "(?i)\\b((ignore|disregard|forget)\\s+(all\\s+|the\\s+)?(previous|above|prior|earlier)\\s+(instructions?|prompts?|messages?)|(ignore|ignorez|oublie|oubliez)\\s+(les\\s+|toutes?\\s+|tes\\s+|vos\\s+)?(instructions?|consignes?|directives?|messages?)\\s+(précédent\\w*|antérieur\\w*|ci-dessus))",
+      "confidence": 0.6,
+      "message": "Formulation de manipulation (prompt injection) détectée"
+    },
+    {
+      "id": "secret.connection_string",
+      "category": "Secret",
+      "severity": "critical",
+      "pattern": "(?i)\\b[a-z][a-z0-9+.-]*://[^\\s:/@]+:[^\\s:/@]+@",
+      "confidence": 0.9,
+      "message": "Chaîne de connexion avec identifiants détectée"
+    },
+    {
+      "id": "secret.credential_assignment",
+      "category": "Secret",
+      "severity": "high",
+      "pattern": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|client[_-]?secret|aws_secret_access_key)\\s*=\\s*\\S{6,}",
+      "confidence": 0.8,
+      "message": "Affectation de secret (mot de passe / clé) détectée"
+    },
+    {
+      "id": "secret.credential_config",
+      "category": "Secret",
+      "severity": "high",
+      "pattern": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|client[_-]?secret|aws_secret_access_key)[\"']?\\s*[:=]\\s*[\"'][^\"']{4,}[\"']",
+      "confidence": 0.85,
+      "message": "Secret en configuration (JSON/YAML) détecté"
+    },
+    {
+      "id": "secret.api_key",
+      "category": "Secret",
+      "severity": "critical",
+      "pattern": "\\b(sk-[A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{30,}|xox[baprs]-[A-Za-z0-9-]{10,})\\b",
+      "confidence": 0.95,
+      "message": "Clé API / secret détecté"
+    },
+    {
+      "id": "secret.jwt",
+      "category": "Secret",
+      "severity": "high",
+      "pattern": "\\beyJ[A-Za-z0-9_-]{8,}\\.[A-Za-z0-9_-]{8,}\\.[A-Za-z0-9_-]{8,}\\b",
+      "confidence": 0.9,
+      "message": "Jeton JWT détecté"
+    },
+    {
+      "id": "secret.private_key",
+      "category": "Secret",
+      "severity": "critical",
+      "pattern": "-----BEGIN (RSA |EC |DSA |OPENSSH |PGP )?PRIVATE KEY-----",
+      "confidence": 0.99,
+      "message": "Bloc de clé privée détecté"
+    },
+    {
+      "id": "secret.gcp_api_key",
+      "category": "Secret",
+      "severity": "critical",
+      "pattern": "\\bAIza[0-9A-Za-z_\\-]{35}\\b",
+      "confidence": 0.95,
+      "message": "Clé API Google (GCP) détectée"
+    },
+    {
+      "id": "secret.stripe_key",
+      "category": "Secret",
+      "severity": "critical",
+      "pattern": "\\b(sk|rk)_(live|test)_[0-9A-Za-z]{16,}\\b",
+      "confidence": 0.95,
+      "message": "Clé secrète Stripe détectée"
+    },
+    {
+      "id": "secret.google_oauth",
+      "category": "Secret",
+      "severity": "critical",
+      "pattern": "\\bya29\\.[0-9A-Za-z_\\-]{20,}\\b",
+      "confidence": 0.9,
+      "message": "Jeton OAuth Google détecté"
+    },
+    {
+      "id": "secret.slack_webhook",
+      "category": "Secret",
+      "severity": "high",
+      "pattern": "https://hooks\\.slack\\.com/services/[A-Za-z0-9/_\\-]+",
+      "confidence": 0.9,
+      "message": "Webhook Slack entrant détecté"
+    },
+    {
+      "id": "pii.email",
+      "category": "PII",
+      "severity": "low",
+      "pattern": "(?i)\\b[a-z0-9._%+\\-]+@[a-z0-9.\\-]+\\.[a-z]{2,}\\b",
+      "confidence": 0.9,
+      "message": "Adresse e-mail détectée"
+    }
+  ],
+  "phishing": {
+    "threshold": 24,
+    "phrases": [
+      { "re": "(?i)\\burgent\\b|\\burgente?s?\\b", "weight": 10, "code": "text.urgent", "label": "urgence" },
+      { "re": "(?i)\\bvirement\\b|\\bwire transfer\\b|\\bbank transfer\\b", "weight": 16, "code": "text.wire", "label": "virement" },
+      { "re": "(?i)mot de passe|\\bpassword\\b", "weight": 12, "code": "text.password", "label": "mot de passe" },
+      { "re": "(?i)compte (?:\\S+ )?(?:suspendu|bloqu[eé]|d[ée]sactiv[eé])|account (?:\\S+ )?(?:suspended|blocked|locked|disabled)", "weight": 18, "code": "text.account_locked", "label": "compte suspendu" },
+      { "re": "(?i)action requise|action required|immediate action", "weight": 10, "code": "text.action_required", "label": "action requise" },
+      { "re": "(?i)confirme[rz]? votre identit[eé]|confirm your identity|verify your (identity|account)", "weight": 16, "code": "text.identity", "label": "confirmation d'identité" },
+      { "re": "(?i)\\bfacture\\b|\\binvoice\\b|\\bpaiement\\b|\\bpayment\\b", "weight": 8, "code": "text.payment", "label": "paiement" },
+      { "re": "(?i)cliquez ici|click here|clique[zr] sur le lien|click the link", "weight": 8, "code": "text.click_here", "label": "lien à cliquer" }
+    ]
+  }
+}

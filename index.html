@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Proxia — Politique de confidentialité / Privacy Policy</title>
+<meta name="description" content="Proxia — tout reste sur votre appareil, rien n'est envoyé. Everything stays on your device, nothing is sent." />
+<style>
+  :root {
+    --navy: #0a2540; --gold: #c9a227; --label: #8a6d1b; --cream: #f7f5ef;
+    --ink: #10181c; --body: #44546a; --line: #e3dfd3; --surface: #ffffff;
+    --sans: -apple-system, "Avenir Next", "Segoe UI", Roboto, system-ui, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --cream: #0d1622; --surface: #12203150; --ink: #eaf0f7; --body: #b6c2d1;
+      --line: #23334733; --navy: #eaf0f7; --label: #d7b64a; }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; font-family: var(--sans); background: var(--cream); color: var(--ink);
+    line-height: 1.6; font-size: 16px; }
+  .wrap { max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+  header { display: flex; align-items: baseline; gap: .7rem; flex-wrap: wrap;
+    border-bottom: 3px solid var(--gold); padding-bottom: 1rem; }
+  .mark { font-family: var(--sans); font-weight: 800; letter-spacing: .14em; font-size: 1.35rem;
+    color: var(--navy); }
+  .eyebrow { font-family: var(--mono); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--label); }
+  h1 { font-size: 1.7rem; line-height: 1.2; color: var(--navy); margin: 1.6rem 0 .2rem; text-wrap: balance; }
+  .updated { font-family: var(--mono); font-size: .8rem; color: var(--body); margin-bottom: 1.6rem; }
+  .principle { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--gold);
+    border-radius: .5rem; padding: 1rem 1.2rem; margin: 1.4rem 0; font-size: 1.05rem; color: var(--ink); }
+  .principle strong { color: var(--navy); }
+  h2 { font-size: 1.12rem; color: var(--navy); margin: 2rem 0 .3rem; }
+  h2::before { content: ""; display: inline-block; width: .8rem; height: 3px; background: var(--label);
+    vertical-align: middle; margin-right: .55rem; }
+  p { color: var(--body); margin: .3rem 0 .9rem; }
+  p strong { color: var(--ink); }
+  .switch { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden;
+    margin-left: auto; }
+  .switch button { font-family: var(--sans); font-size: .82rem; font-weight: 600; border: 0; cursor: pointer;
+    padding: .35rem .9rem; background: transparent; color: var(--body); }
+  .switch button[aria-pressed="true"] { background: var(--navy); color: var(--cream); }
+  .lang[hidden] { display: none; }
+  footer { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--line);
+    font-family: var(--mono); font-size: .78rem; color: var(--body); }
+  a { color: var(--label); }
+  .todo { background: #c9a2271f; border: 1px dashed var(--label); border-radius: .4rem;
+    padding: .1rem .4rem; font-family: var(--mono); font-size: .85em; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="mark">PROXIA</span>
+    <span class="eyebrow">Le pare-feu cognitif personnel</span>
+    <div class="switch" role="group" aria-label="Language">
+      <button id="btn-fr" aria-pressed="true" onclick="setLang('fr')">Français</button>
+      <button id="btn-en" aria-pressed="false" onclick="setLang('en')">English</button>
+    </div>
+  </header>
+
+  <!-- FRANÇAIS -->
+  <section class="lang" id="fr">
+    <h1>Politique de confidentialité</h1>
+    <p class="updated">Dernière mise à jour : 2026-06-30</p>
+    <div class="principle">Proxia est conçue selon un principe simple : <strong>tout reste sur votre
+      appareil, rien n'est envoyé.</strong></div>
+    <h2>Aucune collecte</h2>
+    <p>Proxia ne collecte, ne stocke sur des serveurs, ne transmet et ne vend <strong>aucune</strong>
+      donnée personnelle ou de navigation. L'éditeur n'a accès à rien.</p>
+    <h2>Traitement 100 % local</h2>
+    <p>L'inspection des textes (détection de secrets et de données personnelles) et le masquage à
+      l'affichage s'effectuent intégralement sur votre appareil, via un moteur compilé en WebAssembly
+      embarqué dans l'extension. Les contenus inspectés (vos prompts, le texte des pages) ne quittent
+      jamais le navigateur.</p>
+    <h2>Stockage local uniquement</h2>
+    <p>Vos réglages (activation par site, termes sensibles, exceptions, sites à masquer) sont
+      enregistrés localement via l'API de stockage du navigateur, sur votre machine. Ils ne sont pas
+      synchronisés vers un serveur de l'éditeur.</p>
+    <h2>Aucune requête réseau</h2>
+    <p>L'extension n'émet aucun appel réseau vers un service de l'éditeur ou un tiers.</p>
+    <h2>Permissions</h2>
+    <p>Les autorisations demandées (stockage, onglet actif, scripting, accès aux sites) servent
+      exclusivement aux fonctions décrites sur la fiche du Store et au traitement local. L'accès à un
+      site hors de la liste intégrée n'est demandé que site par site, sur action explicite de
+      l'utilisateur.</p>
+    <h2>Entreprise</h2>
+    <p>En déploiement géré, l'administrateur peut configurer l'extension via la politique du navigateur
+      (paramètres <em>entrants</em> uniquement) ; cela n'entraîne <strong>aucune</strong> remontée de
+      données.</p>
+    <h2>Contact</h2>
+    <p>Pour toute question : <a href="mailto:contact@tametrust.com">contact@tametrust.com</a>.</p>
+  </section>
+
+  <!-- ENGLISH -->
+  <section class="lang" id="en" hidden>
+    <h1>Privacy Policy</h1>
+    <p class="updated">Last updated: 2026-06-30</p>
+    <div class="principle">Proxia is built on a simple principle: <strong>everything stays on your
+      device, nothing is sent.</strong></div>
+    <h2>No collection</h2>
+    <p>Proxia does not collect, store on servers, transmit, or sell <strong>any</strong> personal or
+      browsing data. The publisher has access to nothing.</p>
+    <h2>100% local processing</h2>
+    <p>Text inspection (secret and personal-data detection) and on-screen masking run entirely on your
+      device, via a compiled WebAssembly engine bundled in the extension. Inspected content (your
+      prompts, page text) never leaves the browser.</p>
+    <h2>Local storage only</h2>
+    <p>Your settings (per-site activation, sensitive terms, exceptions, masked sites) are saved locally
+      via the browser storage API, on your machine. They are not synced to any publisher server.</p>
+    <h2>No network requests</h2>
+    <p>The extension makes no network calls to the publisher or third parties.</p>
+    <h2>Permissions</h2>
+    <p>The requested permissions (storage, active tab, scripting, host access) are used solely for the
+      features described on the store listing and for local processing. Access to a site outside the
+      built-in list is requested site-by-site, on explicit user action.</p>
+    <h2>Enterprise</h2>
+    <p>Under managed deployment, an administrator can configure the extension via the browser policy
+      (<em>inbound</em> settings only); this results in <strong>no</strong> data being sent.</p>
+    <h2>Contact</h2>
+    <p>Questions: <a href="mailto:contact@tametrust.com">contact@tametrust.com</a>.</p>
+  </section>
+
+  <footer>Proxia · 100 % on-device · <a href="https://github.com/">github.com/&lt;votre-repo&gt;</a></footer>
+</div>
+
+<script>
+  function setLang(l) {
+    document.getElementById('fr').hidden = (l !== 'fr');
+    document.getElementById('en').hidden = (l !== 'en');
+    document.getElementById('btn-fr').setAttribute('aria-pressed', l === 'fr');
+    document.getElementById('btn-en').setAttribute('aria-pressed', l === 'en');
+    document.documentElement.lang = l;
+  }
+  // Langue initiale selon le navigateur (FR par défaut).
+  if ((navigator.language || 'fr').slice(0, 2).toLowerCase() === 'en') setLang('en');
+</script>
+</body>
+</html>

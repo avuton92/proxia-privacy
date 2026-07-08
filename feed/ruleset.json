@@ -1,5 +1,5 @@
 {
-  "version": 11,
+  "version": 12,
   "rules": [
     {
       "id": "exfiltration.markdown_image",
@@ -45,7 +45,7 @@
       "id": "secret.api_key",
       "category": "Secret",
       "severity": "critical",
-      "pattern": "\\b(sk-[A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{30,}|xox[baprs]-[A-Za-z0-9-]{10,})\\b",
+      "pattern": "\\b(sk-[A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16}|ASIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{22,}|glpat-[A-Za-z0-9_-]{20,}|xox[baprs]-[A-Za-z0-9-]{10,})\\b",
       "confidence": 0.95,
       "message": "Clé API / secret détecté"
     },

@@ -1,5 +1,5 @@
 {
-  "version": 12,
+  "version": 13,
   "rules": [
     {
       "id": "exfiltration.markdown_image",
@@ -13,7 +13,7 @@
       "id": "injection.instruction_override",
       "category": "Injection",
       "severity": "medium",
-      "pattern": "(?i)\\b((ignore|disregard|forget)\\s+(all\\s+|the\\s+)?(previous|above|prior|earlier)\\s+(instructions?|prompts?|messages?)|(ignore|ignorez|oublie|oubliez)\\s+(les\\s+|toutes?\\s+|tes\\s+|vos\\s+)?(instructions?|consignes?|directives?|messages?)\\s+(précédent\\w*|antérieur\\w*|ci-dessus))",
+      "pattern": "(?i)\\b((ignore|disregard|forget)\\s+(all\\s+|the\\s+)?(previous|above|prior|earlier)\\s+(instructions?|prompts?|messages?)|(ignore|ignorez|oublie|oubliez)\\s+(les\\s+|toutes?\\s+|tes\\s+|vos\\s+)?(instructions?|consignes?|directives?|messages?)\\s+(précédent\\w*|antérieur\\w*|ci-dessus)|(negeer|vergeet)\\s+(alle\\s+|de\\s+|je\\s+|uw\\s+)?(vorige|bovenstaande|eerdere)\\s+(instructies?|opdracht(en)?|bericht(en)?))",
       "confidence": 0.6,
       "message": "Formulation de manipulation (prompt injection) détectée"
     },
@@ -109,14 +109,14 @@
   "phishing": {
     "threshold": 24,
     "phrases": [
-      { "re": "(?i)\\burgent\\b|\\burgente?s?\\b", "weight": 10, "code": "text.urgent", "label": "urgence" },
-      { "re": "(?i)\\bvirement\\b|\\bwire transfer\\b|\\bbank transfer\\b", "weight": 16, "code": "text.wire", "label": "virement" },
-      { "re": "(?i)mot de passe|\\bpassword\\b", "weight": 12, "code": "text.password", "label": "mot de passe" },
-      { "re": "(?i)compte (?:\\S+ )?(?:suspendu|bloqu[eé]|d[ée]sactiv[eé])|account (?:\\S+ )?(?:suspended|blocked|locked|disabled)", "weight": 18, "code": "text.account_locked", "label": "compte suspendu" },
-      { "re": "(?i)action requise|action required|immediate action", "weight": 10, "code": "text.action_required", "label": "action requise" },
-      { "re": "(?i)confirme[rz]? votre identit[eé]|confirm your identity|verify your (identity|account)", "weight": 16, "code": "text.identity", "label": "confirmation d'identité" },
-      { "re": "(?i)\\bfacture\\b|\\binvoice\\b|\\bpaiement\\b|\\bpayment\\b", "weight": 8, "code": "text.payment", "label": "paiement" },
-      { "re": "(?i)cliquez ici|click here|clique[zr] sur le lien|click the link", "weight": 8, "code": "text.click_here", "label": "lien à cliquer" }
+      { "re": "(?i)\\burgent\\b|\\burgente?s?\\b|\\bdringende?\\b", "weight": 10, "code": "text.urgent", "label": "urgence" },
+      { "re": "(?i)\\bvirement\\b|\\bwire transfer\\b|\\bbank transfer\\b|\\boverschrijving\\b", "weight": 16, "code": "text.wire", "label": "virement" },
+      { "re": "(?i)mot de passe|\\bpassword\\b|\\bwachtwoord\\b", "weight": 12, "code": "text.password", "label": "mot de passe" },
+      { "re": "(?i)compte (?:\\S+ )?(?:suspendu|bloqu[eé]|d[ée]sactiv[eé])|account (?:\\S+ )?(?:suspended|blocked|locked|disabled|geblokkeerd|opgeschort|gedeactiveerd|vergrendeld)", "weight": 18, "code": "text.account_locked", "label": "compte suspendu" },
+      { "re": "(?i)action requise|action required|immediate action|actie vereist|(?:onmiddellijke|dringende) actie", "weight": 10, "code": "text.action_required", "label": "action requise" },
+      { "re": "(?i)confirme[rz]? votre identit[eé]|confirm your identity|verify your (identity|account)|bevestig uw identiteit|verifieer uw (identiteit|account|gegevens)", "weight": 16, "code": "text.identity", "label": "confirmation d'identité" },
+      { "re": "(?i)\\bfacture\\b|\\binvoice\\b|\\bpaiement\\b|\\bpayment\\b|\\bfactuur\\b|\\bbetaling\\b", "weight": 8, "code": "text.payment", "label": "paiement" },
+      { "re": "(?i)cliquez ici|click here|clique[zr] sur le lien|click the link|klik hier|klik op (?:de )?(?:onderstaande )?link", "weight": 8, "code": "text.click_here", "label": "lien à cliquer" }
     ]
   }
 }

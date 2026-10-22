@@ -1,5 +1,5 @@
 {
-  "version": 13,
+  "version": 18,
   "rules": [
     {
       "id": "exfiltration.markdown_image",
@@ -29,7 +29,7 @@
       "id": "secret.credential_assignment",
       "category": "Secret",
       "severity": "high",
-      "pattern": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|client[_-]?secret|aws_secret_access_key)\\s*=\\s*\\S{6,}",
+      "pattern": "(?i)\\b(?:[A-Za-z0-9]+_)*(?:password|passwd|pwd|secret|api[_-]?key|access[_-]?token|client[_-]?secret|aws_secret_access_key)\\s*=\\s*[\"']?(?:[A-Za-z0-9_+/!@#$%^&*?~\\-][A-Za-z0-9_+/!@#$%^&*?~=\\-]{5,}|[!@#%^&*?~+/\\-][A-Za-z0-9_.+/!@#$%^&*?~=\\-]{5,}|[A-Za-z0-9_.+/!@#$%^&*?~\\-][!@#%^&*?~+/\\-][A-Za-z0-9_.+/!@#$%^&*?~=\\-]{4,}|[A-Za-z0-9_.+/!@#$%^&*?~\\-][A-Za-z0-9_.+/!@#$%^&*?~=\\-][!@#%^&*?~+/\\-][A-Za-z0-9_.+/!@#$%^&*?~=\\-]{3,}|[A-Za-z0-9_.+/!@#$%^&*?~\\-][A-Za-z0-9_.+/!@#$%^&*?~=\\-]{2}[!@#%^&*?~+/\\-][A-Za-z0-9_.+/!@#$%^&*?~=\\-]{2,}|[A-Za-z0-9_.+/!@#$%^&*?~\\-][A-Za-z0-9_.+/!@#$%^&*?~=\\-]{3}[!@#%^&*?~+/\\-][A-Za-z0-9_.+/!@#$%^&*?~=\\-]{1,}|[A-Za-z0-9_.+/!@#$%^&*?~\\-][A-Za-z0-9_.+/!@#$%^&*?~=\\-]{4,}[!@#%^&*?~+/\\-][A-Za-z0-9_.+/!@#$%^&*?~=\\-]*|[A-Za-z0-9_.+/!@#$%^&*?~\\-][A-Za-z0-9_.+/!@#$%^&*?~=\\-]{2,}\\.[0-9]{2,})(?:[\"'\\s;,)\\]}>]|$)",
       "confidence": 0.8,
       "message": "Affectation de secret (mot de passe / clé) détectée"
     },
@@ -39,7 +39,8 @@
       "severity": "high",
       "pattern": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|client[_-]?secret|aws_secret_access_key)[\"']?\\s*[:=]\\s*[\"'][^\"']{4,}[\"']",
       "confidence": 0.85,
-      "message": "Secret en configuration (JSON/YAML) détecté"
+      "message": "Secret en configuration (JSON/YAML) détecté",
+      "exclude_pattern": "(?i)[\"']?\\s*[:=]\\s*[\"'](?:string|number|boolean|bigint|symbol|object|any|unknown|never|void|null|undefined|true|false|integer|float|double|array|date|\\$\\{[^}]*\\}|<[^>]*>)[\"']$"
     },
     {
       "id": "secret.api_key",
@@ -108,15 +109,1652 @@
   ],
   "phishing": {
     "threshold": 24,
+    "scoring": {
+      "levels": {
+        "medium": 30,
+        "high": 70
+      },
+      "caps": {
+        "text": 56,
+        "link": 70,
+        "display": 45
+      },
+      "weights": {
+        "link.shortener": 28,
+        "link.ip_url": 28,
+        "link.punycode": 26,
+        "link.lookalike_brand": 26,
+        "link.brand_subdomain": 30,
+        "link.deep_subdomain": 18,
+        "link.http": 18,
+        "link.google_redirect": 20,
+        "link.excessive_count": 14,
+        "link.homograph": 28,
+        "display.mixed_script": 28,
+        "display.domain_mismatch": 30,
+        "delivery.claimed_carrier_domain_mismatch": 30,
+        "delivery.unknown_action_domain": 15
+      }
+    },
     "phrases": [
-      { "re": "(?i)\\burgent\\b|\\burgente?s?\\b|\\bdringende?\\b", "weight": 10, "code": "text.urgent", "label": "urgence" },
-      { "re": "(?i)\\bvirement\\b|\\bwire transfer\\b|\\bbank transfer\\b|\\boverschrijving\\b", "weight": 16, "code": "text.wire", "label": "virement" },
-      { "re": "(?i)mot de passe|\\bpassword\\b|\\bwachtwoord\\b", "weight": 12, "code": "text.password", "label": "mot de passe" },
-      { "re": "(?i)compte (?:\\S+ )?(?:suspendu|bloqu[eé]|d[ée]sactiv[eé])|account (?:\\S+ )?(?:suspended|blocked|locked|disabled|geblokkeerd|opgeschort|gedeactiveerd|vergrendeld)", "weight": 18, "code": "text.account_locked", "label": "compte suspendu" },
-      { "re": "(?i)action requise|action required|immediate action|actie vereist|(?:onmiddellijke|dringende) actie", "weight": 10, "code": "text.action_required", "label": "action requise" },
-      { "re": "(?i)confirme[rz]? votre identit[eé]|confirm your identity|verify your (identity|account)|bevestig uw identiteit|verifieer uw (identiteit|account|gegevens)", "weight": 16, "code": "text.identity", "label": "confirmation d'identité" },
-      { "re": "(?i)\\bfacture\\b|\\binvoice\\b|\\bpaiement\\b|\\bpayment\\b|\\bfactuur\\b|\\bbetaling\\b", "weight": 8, "code": "text.payment", "label": "paiement" },
-      { "re": "(?i)cliquez ici|click here|clique[zr] sur le lien|click the link|klik hier|klik op (?:de )?(?:onderstaande )?link", "weight": 8, "code": "text.click_here", "label": "lien à cliquer" }
-    ]
+      {
+        "re": "(?i)\\burgent\\b|\\burgente?s?\\b|\\bdringende?\\b",
+        "weight": 10,
+        "code": "text.urgent",
+        "label": "urgence"
+      },
+      {
+        "re": "(?i)\\bvirement\\b|\\bwire transfer\\b|\\bbank transfer\\b|\\boverschrijving\\b",
+        "weight": 16,
+        "code": "text.wire",
+        "label": "virement"
+      },
+      {
+        "re": "(?i)mot de passe|\\bpassword\\b|\\bwachtwoord\\b",
+        "weight": 12,
+        "code": "text.password",
+        "label": "mot de passe"
+      },
+      {
+        "re": "(?i)compte (?:\\S+ )?(?:suspendu|bloqu[eé]|d[ée]sactiv[eé])|account (?:\\S+ )?(?:suspended|blocked|locked|disabled|geblokkeerd|opgeschort|gedeactiveerd|vergrendeld)",
+        "weight": 18,
+        "code": "text.account_locked",
+        "label": "compte suspendu"
+      },
+      {
+        "re": "(?i)action requise|action required|immediate action|actie vereist|(?:onmiddellijke|dringende) actie",
+        "weight": 10,
+        "code": "text.action_required",
+        "label": "action requise"
+      },
+      {
+        "re": "(?i)confirme[rz]? votre identit[eé]|confirm your identity|verify your (identity|account)|bevestig uw identiteit|verifieer uw (identiteit|account|gegevens)",
+        "weight": 16,
+        "code": "text.identity",
+        "label": "confirmation d'identité"
+      },
+      {
+        "re": "(?i)\\bfacture\\b|\\binvoice\\b|\\bpaiement\\b|\\bpayment\\b|\\bfactuur\\b|\\bbetaling\\b",
+        "weight": 8,
+        "code": "text.payment",
+        "label": "paiement"
+      },
+      {
+        "re": "(?i)cliquez ici|click here|clique[zr] sur le lien|click the link|klik hier|klik op (?:de )?(?:onderstaande )?link",
+        "weight": 8,
+        "code": "text.click_here",
+        "label": "lien à cliquer"
+      }
+    ],
+    "delivery_identity": {
+      "schema_version": 1,
+      "intents": {
+        "scenario": [
+          {
+            "text": "votre colis",
+            "lang": "fr"
+          },
+          {
+            "text": "votre paquet",
+            "lang": "fr"
+          },
+          {
+            "text": "votre livraison",
+            "lang": "fr"
+          },
+          {
+            "text": "votre commande",
+            "lang": "fr"
+          },
+          {
+            "text": "numero de suivi",
+            "lang": "fr"
+          },
+          {
+            "text": "livraison a domicile",
+            "lang": "fr"
+          },
+          {
+            "text": "n a pas pu etre livre",
+            "lang": "fr",
+            "ocr_tolerant": true
+          },
+          {
+            "text": "echec de livraison",
+            "lang": "fr",
+            "ocr_tolerant": true
+          },
+          {
+            "text": "your parcel",
+            "lang": "en"
+          },
+          {
+            "text": "your package",
+            "lang": "en"
+          },
+          {
+            "text": "your delivery",
+            "lang": "en"
+          },
+          {
+            "text": "your shipment",
+            "lang": "en"
+          },
+          {
+            "text": "tracking number",
+            "lang": "en"
+          },
+          {
+            "text": "could not be delivered",
+            "lang": "en",
+            "ocr_tolerant": true
+          },
+          {
+            "text": "delivery attempt",
+            "lang": "en",
+            "ocr_tolerant": true
+          },
+          {
+            "text": "uw pakket",
+            "lang": "nl"
+          },
+          {
+            "text": "uw pakketje",
+            "lang": "nl"
+          },
+          {
+            "text": "uw zending",
+            "lang": "nl"
+          },
+          {
+            "text": "uw levering",
+            "lang": "nl"
+          },
+          {
+            "text": "trackingnummer",
+            "lang": "nl"
+          },
+          {
+            "text": "kon niet worden bezorgd",
+            "lang": "nl",
+            "ocr_tolerant": true
+          },
+          {
+            "text": "bezorging mislukt",
+            "lang": "nl",
+            "ocr_tolerant": true
+          },
+          {
+            "text": "ihr paket",
+            "lang": "de"
+          },
+          {
+            "text": "ihre sendung",
+            "lang": "de"
+          },
+          {
+            "text": "ihre lieferung",
+            "lang": "de"
+          },
+          {
+            "text": "sendungsnummer",
+            "lang": "de"
+          },
+          {
+            "text": "konnte nicht zugestellt werden",
+            "lang": "de",
+            "ocr_tolerant": true
+          },
+          {
+            "text": "zustellung fehlgeschlagen",
+            "lang": "de",
+            "ocr_tolerant": true
+          },
+          {
+            "text": "su paquete",
+            "lang": "es"
+          },
+          {
+            "text": "su envio",
+            "lang": "es"
+          },
+          {
+            "text": "su entrega",
+            "lang": "es"
+          },
+          {
+            "text": "numero de seguimiento",
+            "lang": "es"
+          },
+          {
+            "text": "no se ha podido entregar",
+            "lang": "es",
+            "ocr_tolerant": true
+          },
+          {
+            "text": "entrega fallida",
+            "lang": "es",
+            "ocr_tolerant": true
+          },
+          {
+            "text": "il tuo pacco",
+            "lang": "it"
+          },
+          {
+            "text": "la tua spedizione",
+            "lang": "it"
+          },
+          {
+            "text": "la tua consegna",
+            "lang": "it"
+          },
+          {
+            "text": "numero di tracciamento",
+            "lang": "it"
+          },
+          {
+            "text": "non e stato possibile consegnare",
+            "lang": "it",
+            "ocr_tolerant": true
+          },
+          {
+            "text": "consegna non riuscita",
+            "lang": "it",
+            "ocr_tolerant": true
+          }
+        ],
+        "actions": {
+          "tracking": [
+            {
+              "text": "suivre mon colis",
+              "lang": "fr"
+            },
+            {
+              "text": "suivi de colis",
+              "lang": "fr"
+            },
+            {
+              "text": "suivre ma commande",
+              "lang": "fr"
+            },
+            {
+              "text": "track my parcel",
+              "lang": "en"
+            },
+            {
+              "text": "track your package",
+              "lang": "en"
+            },
+            {
+              "text": "track shipment",
+              "lang": "en"
+            },
+            {
+              "text": "volg mijn pakket",
+              "lang": "nl"
+            },
+            {
+              "text": "zending volgen",
+              "lang": "nl"
+            },
+            {
+              "text": "sendung verfolgen",
+              "lang": "de"
+            },
+            {
+              "text": "paket verfolgen",
+              "lang": "de"
+            },
+            {
+              "text": "seguir mi paquete",
+              "lang": "es"
+            },
+            {
+              "text": "rastrear el envio",
+              "lang": "es"
+            },
+            {
+              "text": "traccia il pacco",
+              "lang": "it"
+            },
+            {
+              "text": "segui la spedizione",
+              "lang": "it"
+            }
+          ],
+          "reschedule_delivery": [
+            {
+              "text": "reprogrammer la livraison",
+              "lang": "fr",
+              "ocr_tolerant": true
+            },
+            {
+              "text": "replanifier la livraison",
+              "lang": "fr",
+              "ocr_tolerant": true
+            },
+            {
+              "text": "nouvelle tentative de livraison",
+              "lang": "fr"
+            },
+            {
+              "text": "choisir une nouvelle date",
+              "lang": "fr"
+            },
+            {
+              "text": "reschedule your delivery",
+              "lang": "en",
+              "ocr_tolerant": true
+            },
+            {
+              "text": "reschedule delivery",
+              "lang": "en",
+              "ocr_tolerant": true
+            },
+            {
+              "text": "arrange redelivery",
+              "lang": "en"
+            },
+            {
+              "text": "choose a new date",
+              "lang": "en"
+            },
+            {
+              "text": "levering opnieuw plannen",
+              "lang": "nl",
+              "ocr_tolerant": true
+            },
+            {
+              "text": "nieuwe bezorgpoging",
+              "lang": "nl"
+            },
+            {
+              "text": "zustellung neu planen",
+              "lang": "de",
+              "ocr_tolerant": true
+            },
+            {
+              "text": "neuen liefertermin",
+              "lang": "de"
+            },
+            {
+              "text": "reprogramar la entrega",
+              "lang": "es",
+              "ocr_tolerant": true
+            },
+            {
+              "text": "nueva fecha de entrega",
+              "lang": "es"
+            },
+            {
+              "text": "riprogramma la consegna",
+              "lang": "it",
+              "ocr_tolerant": true
+            },
+            {
+              "text": "nuova data di consegna",
+              "lang": "it"
+            }
+          ],
+          "choose_pickup": [
+            {
+              "text": "choisir un point relais",
+              "lang": "fr"
+            },
+            {
+              "text": "point de retrait",
+              "lang": "fr"
+            },
+            {
+              "text": "choisir une consigne",
+              "lang": "fr"
+            },
+            {
+              "text": "choose a pickup point",
+              "lang": "en"
+            },
+            {
+              "text": "collect from a locker",
+              "lang": "en"
+            },
+            {
+              "text": "pickup location",
+              "lang": "en"
+            },
+            {
+              "text": "kies een afhaalpunt",
+              "lang": "nl"
+            },
+            {
+              "text": "pakketautomaat",
+              "lang": "nl"
+            },
+            {
+              "text": "abholstation wahlen",
+              "lang": "de"
+            },
+            {
+              "text": "packstation",
+              "lang": "de"
+            },
+            {
+              "text": "filiale wahlen",
+              "lang": "de"
+            },
+            {
+              "text": "elegir un punto de recogida",
+              "lang": "es"
+            },
+            {
+              "text": "punto de recogida",
+              "lang": "es"
+            },
+            {
+              "text": "scegli un punto di ritiro",
+              "lang": "it"
+            },
+            {
+              "text": "punto di ritiro",
+              "lang": "it"
+            }
+          ],
+          "confirm_address": [
+            {
+              "text": "confirmer votre adresse",
+              "lang": "fr",
+              "ocr_tolerant": true
+            },
+            {
+              "text": "mettre a jour votre adresse",
+              "lang": "fr"
+            },
+            {
+              "text": "verifier votre adresse",
+              "lang": "fr"
+            },
+            {
+              "text": "confirm your address",
+              "lang": "en",
+              "ocr_tolerant": true
+            },
+            {
+              "text": "update your address",
+              "lang": "en"
+            },
+            {
+              "text": "verify your address",
+              "lang": "en"
+            },
+            {
+              "text": "bevestig uw adres",
+              "lang": "nl",
+              "ocr_tolerant": true
+            },
+            {
+              "text": "adres bijwerken",
+              "lang": "nl"
+            },
+            {
+              "text": "adresse bestatigen",
+              "lang": "de",
+              "ocr_tolerant": true
+            },
+            {
+              "text": "adresse aktualisieren",
+              "lang": "de"
+            },
+            {
+              "text": "confirmar su direccion",
+              "lang": "es",
+              "ocr_tolerant": true
+            },
+            {
+              "text": "actualizar su direccion",
+              "lang": "es"
+            },
+            {
+              "text": "conferma il tuo indirizzo",
+              "lang": "it",
+              "ocr_tolerant": true
+            },
+            {
+              "text": "aggiorna il tuo indirizzo",
+              "lang": "it"
+            }
+          ],
+          "payment": [
+            {
+              "text": "regler les frais",
+              "lang": "fr",
+              "ocr_tolerant": true
+            },
+            {
+              "text": "frais de douane",
+              "lang": "fr"
+            },
+            {
+              "text": "frais de livraison",
+              "lang": "fr"
+            },
+            {
+              "text": "payer les frais",
+              "lang": "fr",
+              "ocr_tolerant": true
+            },
+            {
+              "text": "montant a regler",
+              "lang": "fr"
+            },
+            {
+              "text": "pay the fee",
+              "lang": "en",
+              "ocr_tolerant": true
+            },
+            {
+              "text": "customs fee",
+              "lang": "en"
+            },
+            {
+              "text": "shipping fee",
+              "lang": "en"
+            },
+            {
+              "text": "outstanding payment",
+              "lang": "en"
+            },
+            {
+              "text": "betaal de kosten",
+              "lang": "nl",
+              "ocr_tolerant": true
+            },
+            {
+              "text": "douanekosten",
+              "lang": "nl"
+            },
+            {
+              "text": "verzendkosten",
+              "lang": "nl"
+            },
+            {
+              "text": "gebuhr bezahlen",
+              "lang": "de",
+              "ocr_tolerant": true
+            },
+            {
+              "text": "zollgebuhren",
+              "lang": "de"
+            },
+            {
+              "text": "versandkosten",
+              "lang": "de"
+            },
+            {
+              "text": "pagar la tasa",
+              "lang": "es",
+              "ocr_tolerant": true
+            },
+            {
+              "text": "gastos de aduana",
+              "lang": "es"
+            },
+            {
+              "text": "gastos de envio",
+              "lang": "es"
+            },
+            {
+              "text": "paga la tassa",
+              "lang": "it",
+              "ocr_tolerant": true
+            },
+            {
+              "text": "spese doganali",
+              "lang": "it"
+            },
+            {
+              "text": "spese di spedizione",
+              "lang": "it"
+            }
+          ],
+          "authentication": [
+            {
+              "text": "connectez vous a votre compte",
+              "lang": "fr"
+            },
+            {
+              "text": "identifiez vous",
+              "lang": "fr"
+            },
+            {
+              "text": "log in to your account",
+              "lang": "en"
+            },
+            {
+              "text": "sign in to your account",
+              "lang": "en"
+            },
+            {
+              "text": "log in op uw account",
+              "lang": "nl"
+            },
+            {
+              "text": "inloggen op uw account",
+              "lang": "nl"
+            },
+            {
+              "text": "melden sie sich an",
+              "lang": "de"
+            },
+            {
+              "text": "bei ihrem konto anmelden",
+              "lang": "de"
+            },
+            {
+              "text": "inicie sesion en su cuenta",
+              "lang": "es"
+            },
+            {
+              "text": "accedi al tuo account",
+              "lang": "it"
+            }
+          ]
+        }
+      },
+      "carriers": [
+        {
+          "id": "la_poste",
+          "aliases": [
+            {
+              "text": "La Poste"
+            },
+            {
+              "text": "laposte"
+            }
+          ],
+          "domains": [
+            {
+              "host": "laposte.fr",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            },
+            {
+              "host": "laposte.net",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            }
+          ],
+          "related": [
+            "colissimo",
+            "chronopost"
+          ],
+          "source": "domaines de notoriete publique - revue et attestation du lead Proxia (2026-09-02), sans verification en ligne",
+          "reviewed_on": "2026-09-02"
+        },
+        {
+          "id": "colissimo",
+          "aliases": [
+            {
+              "text": "Colissimo"
+            }
+          ],
+          "domains": [
+            {
+              "host": "colissimo.fr",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            }
+          ],
+          "related": [
+            "la_poste"
+          ],
+          "source": "domaines de notoriete publique - revue et attestation du lead Proxia (2026-09-02), sans verification en ligne",
+          "reviewed_on": "2026-09-02"
+        },
+        {
+          "id": "chronopost",
+          "aliases": [
+            {
+              "text": "Chronopost"
+            }
+          ],
+          "domains": [
+            {
+              "host": "chronopost.fr",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            }
+          ],
+          "related": [
+            "la_poste"
+          ],
+          "source": "domaines de notoriete publique - revue et attestation du lead Proxia (2026-09-02), sans verification en ligne",
+          "reviewed_on": "2026-09-02"
+        },
+        {
+          "id": "mondial_relay",
+          "aliases": [
+            {
+              "text": "Mondial Relay"
+            },
+            {
+              "text": "MondialRelay"
+            }
+          ],
+          "domains": [
+            {
+              "host": "mondialrelay.fr",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            },
+            {
+              "host": "mondialrelay.com",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            }
+          ],
+          "related": [
+            "inpost"
+          ],
+          "source": "domaines de notoriete publique - revue et attestation du lead Proxia (2026-09-02), sans verification en ligne",
+          "reviewed_on": "2026-09-02"
+        },
+        {
+          "id": "relais_colis",
+          "aliases": [
+            {
+              "text": "Relais Colis"
+            },
+            {
+              "text": "RelaisColis"
+            }
+          ],
+          "domains": [
+            {
+              "host": "relaiscolis.com",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            }
+          ],
+          "related": [],
+          "source": "domaines de notoriete publique - revue et attestation du lead Proxia (2026-09-02), sans verification en ligne",
+          "reviewed_on": "2026-09-02"
+        },
+        {
+          "id": "colis_prive",
+          "aliases": [
+            {
+              "text": "Colis Prive"
+            },
+            {
+              "text": "Colis Privé"
+            },
+            {
+              "text": "ColisPrive"
+            }
+          ],
+          "domains": [
+            {
+              "host": "colisprive.com",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            },
+            {
+              "host": "colisprive.fr",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            }
+          ],
+          "related": [],
+          "source": "domaines de notoriete publique - revue et attestation du lead Proxia (2026-09-02), sans verification en ligne",
+          "reviewed_on": "2026-09-02"
+        },
+        {
+          "id": "bpost",
+          "aliases": [
+            {
+              "text": "bpost"
+            },
+            {
+              "text": "b post"
+            }
+          ],
+          "domains": [
+            {
+              "host": "bpost.be",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            },
+            {
+              "host": "bpost.eu",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            }
+          ],
+          "related": [],
+          "source": "domaines de notoriete publique - revue et attestation du lead Proxia (2026-09-02), sans verification en ligne",
+          "reviewed_on": "2026-09-02"
+        },
+        {
+          "id": "postnl",
+          "aliases": [
+            {
+              "text": "PostNL"
+            },
+            {
+              "text": "Post NL"
+            }
+          ],
+          "domains": [
+            {
+              "host": "postnl.nl",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            },
+            {
+              "host": "postnl.be",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            },
+            {
+              "host": "postnl.post",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            }
+          ],
+          "related": [],
+          "source": "domaines de notoriete publique - revue et attestation du lead Proxia (2026-09-02), sans verification en ligne",
+          "reviewed_on": "2026-09-02"
+        },
+        {
+          "id": "deutsche_post",
+          "aliases": [
+            {
+              "text": "Deutsche Post"
+            }
+          ],
+          "domains": [
+            {
+              "host": "deutschepost.de",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            }
+          ],
+          "related": [
+            "dhl"
+          ],
+          "source": "domaines de notoriete publique - revue et attestation du lead Proxia (2026-09-02), sans verification en ligne",
+          "reviewed_on": "2026-09-02"
+        },
+        {
+          "id": "dhl",
+          "aliases": [
+            {
+              "text": "DHL"
+            },
+            {
+              "text": "DHL Express"
+            },
+            {
+              "text": "DHL Paket"
+            }
+          ],
+          "domains": [
+            {
+              "host": "dhl.de",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            },
+            {
+              "host": "dhl.com",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            },
+            {
+              "host": "dhlparcel.nl",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            },
+            {
+              "host": "dhlparcel.co.uk",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            }
+          ],
+          "related": [
+            "deutsche_post"
+          ],
+          "source": "domaines de notoriete publique - revue et attestation du lead Proxia (2026-09-02), sans verification en ligne",
+          "reviewed_on": "2026-09-02"
+        },
+        {
+          "id": "hermes_de",
+          "aliases": [
+            {
+              "text": "Hermes"
+            },
+            {
+              "text": "MyHermes"
+            }
+          ],
+          "domains": [
+            {
+              "host": "myhermes.de",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            },
+            {
+              "host": "hermesworld.com",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            }
+          ],
+          "related": [],
+          "source": "domaines de notoriete publique - revue et attestation du lead Proxia (2026-09-02), sans verification en ligne",
+          "reviewed_on": "2026-09-02"
+        },
+        {
+          "id": "correos",
+          "aliases": [
+            {
+              "text": "Correos"
+            }
+          ],
+          "domains": [
+            {
+              "host": "correos.es",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            }
+          ],
+          "related": [],
+          "source": "domaines de notoriete publique - revue et attestation du lead Proxia (2026-09-02), sans verification en ligne",
+          "reviewed_on": "2026-09-02"
+        },
+        {
+          "id": "seur",
+          "aliases": [
+            {
+              "text": "SEUR"
+            }
+          ],
+          "domains": [
+            {
+              "host": "seur.com",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            },
+            {
+              "host": "seur.es",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            }
+          ],
+          "related": [],
+          "source": "domaines de notoriete publique - revue et attestation du lead Proxia (2026-09-02), sans verification en ligne",
+          "reviewed_on": "2026-09-02"
+        },
+        {
+          "id": "poste_italiane",
+          "aliases": [
+            {
+              "text": "Poste Italiane"
+            },
+            {
+              "text": "PosteItaliane"
+            }
+          ],
+          "domains": [
+            {
+              "host": "poste.it",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            }
+          ],
+          "related": [],
+          "source": "domaines de notoriete publique - revue et attestation du lead Proxia (2026-09-02), sans verification en ligne",
+          "reviewed_on": "2026-09-02"
+        },
+        {
+          "id": "brt",
+          "aliases": [
+            {
+              "text": "BRT"
+            },
+            {
+              "text": "Bartolini"
+            },
+            {
+              "text": "BRT Corriere Espresso"
+            }
+          ],
+          "domains": [
+            {
+              "host": "brt.it",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            }
+          ],
+          "related": [],
+          "source": "domaines de notoriete publique - revue et attestation du lead Proxia (2026-09-02), sans verification en ligne",
+          "reviewed_on": "2026-09-02"
+        },
+        {
+          "id": "royal_mail",
+          "aliases": [
+            {
+              "text": "Royal Mail"
+            },
+            {
+              "text": "RoyalMail"
+            }
+          ],
+          "domains": [
+            {
+              "host": "royalmail.com",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            },
+            {
+              "host": "royalmail.co.uk",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            }
+          ],
+          "related": [],
+          "source": "domaines de notoriete publique - revue et attestation du lead Proxia (2026-09-02), sans verification en ligne",
+          "reviewed_on": "2026-09-02"
+        },
+        {
+          "id": "evri",
+          "aliases": [
+            {
+              "text": "Evri"
+            },
+            {
+              "text": "Hermes UK"
+            }
+          ],
+          "domains": [
+            {
+              "host": "evri.com",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            },
+            {
+              "host": "evri.co.uk",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            }
+          ],
+          "related": [],
+          "source": "domaines de notoriete publique - revue et attestation du lead Proxia (2026-09-02), sans verification en ligne",
+          "reviewed_on": "2026-09-02"
+        },
+        {
+          "id": "ups",
+          "aliases": [
+            {
+              "text": "UPS"
+            },
+            {
+              "text": "United Parcel Service"
+            }
+          ],
+          "domains": [
+            {
+              "host": "ups.com",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            }
+          ],
+          "related": [],
+          "source": "domaines de notoriete publique - revue et attestation du lead Proxia (2026-09-02), sans verification en ligne",
+          "reviewed_on": "2026-09-02"
+        },
+        {
+          "id": "fedex",
+          "aliases": [
+            {
+              "text": "FedEx"
+            },
+            {
+              "text": "Fed Ex"
+            }
+          ],
+          "domains": [
+            {
+              "host": "fedex.com",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            }
+          ],
+          "related": [],
+          "source": "domaines de notoriete publique - revue et attestation du lead Proxia (2026-09-02), sans verification en ligne",
+          "reviewed_on": "2026-09-02"
+        },
+        {
+          "id": "tnt",
+          "aliases": [
+            {
+              "text": "TNT"
+            }
+          ],
+          "domains": [
+            {
+              "host": "tnt.com",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            }
+          ],
+          "related": [
+            "fedex"
+          ],
+          "source": "domaines de notoriete publique - revue et attestation du lead Proxia (2026-09-02), sans verification en ligne",
+          "reviewed_on": "2026-09-02"
+        },
+        {
+          "id": "dpd",
+          "aliases": [
+            {
+              "text": "DPD"
+            },
+            {
+              "text": "DPD Group"
+            }
+          ],
+          "domains": [
+            {
+              "host": "dpd.com",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            },
+            {
+              "host": "dpd.fr",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            },
+            {
+              "host": "dpd.de",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            },
+            {
+              "host": "dpd.co.uk",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            }
+          ],
+          "related": [],
+          "source": "domaines de notoriete publique - revue et attestation du lead Proxia (2026-09-02), sans verification en ligne",
+          "reviewed_on": "2026-09-02"
+        },
+        {
+          "id": "gls",
+          "aliases": [
+            {
+              "text": "GLS"
+            },
+            {
+              "text": "General Logistics Systems"
+            }
+          ],
+          "domains": [
+            {
+              "host": "gls-group.com",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            },
+            {
+              "host": "gls-group.eu",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            }
+          ],
+          "related": [],
+          "source": "domaines de notoriete publique - revue et attestation du lead Proxia (2026-09-02), sans verification en ligne",
+          "reviewed_on": "2026-09-02"
+        },
+        {
+          "id": "inpost",
+          "aliases": [
+            {
+              "text": "InPost"
+            },
+            {
+              "text": "Paczkomat"
+            }
+          ],
+          "domains": [
+            {
+              "host": "inpost.pl",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            },
+            {
+              "host": "inpost.fr",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            },
+            {
+              "host": "inpost.co.uk",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            }
+          ],
+          "related": [
+            "mondial_relay"
+          ],
+          "source": "domaines de notoriete publique - revue et attestation du lead Proxia (2026-09-02), sans verification en ligne",
+          "reviewed_on": "2026-09-02"
+        },
+        {
+          "id": "packeta",
+          "aliases": [
+            {
+              "text": "Packeta"
+            },
+            {
+              "text": "Zasilkovna"
+            }
+          ],
+          "domains": [
+            {
+              "host": "packeta.com",
+              "kind": "first_party",
+              "uses": [
+                "tracking",
+                "reschedule_delivery",
+                "choose_pickup",
+                "confirm_address",
+                "payment",
+                "authentication"
+              ],
+              "countries": [],
+              "include_subdomains": true
+            }
+          ],
+          "related": [],
+          "source": "domaines de notoriete publique - revue et attestation du lead Proxia (2026-09-02), sans verification en ligne",
+          "reviewed_on": "2026-09-02"
+        }
+      ]
+    }
   }
 }
